@@ -42,4 +42,14 @@
   border: 2px solid #34A853;
   background-color: #ffffff;
   color: #34A853;
-  margin-right: 50p
+  margin-right: 50px;
+}
+
+.btn_secondary:hover {
+  border: 2px solid #48cd6b;
+  color: #48cd6b;
+}
+
+.link {
+  color: #34A853;
+}
