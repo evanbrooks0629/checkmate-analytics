@@ -1,0 +1,18 @@
+.Home {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffffff; /* Replace with the background color from your Figma design */
+  }
+  
+  .Content {
+    text-align: center; /* Centers the text */
+    margin-top: 150px;
+  }
+  
+  .h3 {
+    font-size: 24px; /* Adjust font size to match Figma design */
+    color: #333; /* Replace with the actual color from your Figma design */
+    margin-bottom: 20px; /* Adjust space between title and logo */
+  }
+  

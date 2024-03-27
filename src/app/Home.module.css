@@ -1,0 +1,63 @@
+.Home {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffffff; /* Replace with the background color from your Figma design */
+  }
+  
+  .Content {
+    text-align: center; /* Centers the text */
+    margin-top: 150px;
+  }
+  
+  .h3 {
+    font-size: 24px; /* Adjust font size to match Figma design */
+    color: #333; /* Replace with the actual color from your Figma design */
+    margin-bottom: 20px; /* Adjust space between title and logo */
+  }
+  
+  .image {
+    margin: 32px 0; /* Add space above and below the logo */
+  }
+
+  .buttonBox {
+    display: flex;
+    flex-direction: column; /* Stack children vertically */
+    align-items: center; /* Center children horizontally */
+    gap: 10px; /* Space between buttons */
+  }
+  
+  /* Button styles */
+  .login, .signup {
+    font-size: 1em; /* Match the font size from the design */
+    padding: 10px 24px; /* Add padding to increase the size of the buttons */
+    border: 2px solid transparent; /* Default border to override for 'Sign Up' */
+    border-radius: 4px; /* Rounded corners */
+    margin: 8px; /* Space between buttons */
+    cursor: pointer; /* Change cursor to pointer on hover */
+    text-decoration: none; /* Remove underline from links */
+    display: inline-block; /* Allow for margins and padding on anchor tags */
+    width: 100%;
+  }
+  
+  /* Specific styles for the 'Log In' button */
+  .login {
+    background-color: #34A853; /* Green background */
+    color: #ffffff; /* White text */
+  }
+  
+  /* Specific styles for the 'Sign Up' button */
+  .signup {
+    background-color: #ffffff; /* White background */
+    color: #34A853; /* Green text */
+    border-color: #34A853; /* Green border */
+  }
+  
+  .login:hover {
+    border: 2px solid #48cd6b;
+    background-color: #48cd6b;
+  }
+  .signup:hover {
+    border: 2px solid #48cd6b;
+    color: #48cd6b;
+  }
