@@ -11,9 +11,9 @@ export default function Navbar (props) {
     <nav className={styles.nav}>
         <Link href="/">
           <Image 
-            src="/CheckMateLogo.png"
-            height={60}
-            width={120}
+            src="/images/CheckMateLogo.png"
+            height={80}
+            width={160}
             alt="Logo"
             />
         </Link> 
