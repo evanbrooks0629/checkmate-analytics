@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react'; // Import useState from React
+import React, { useState } from 'react';
 import '../globals.css';
 import Navbar from '../../components/Navbar';
 import styles from './Signup.module.css';
