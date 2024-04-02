@@ -6,8 +6,11 @@
   }
   
   .Content {
-    text-align: center; /* Centers the text */
     margin-top: 150px;
+    border: 1px solid black;
+    border-radius: 1rem;
+    height: 30rem;
+    padding: 1rem;
   }
   
   .h3 {
@@ -15,4 +18,37 @@
     color: #333; /* Replace with the actual color from your Figma design */
     margin-bottom: 20px; /* Adjust space between title and logo */
   }
-  
+
+ .form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+ }
+
+ .input {
+  border: 3px solid green;
+  border-radius: 1rem;
+  height: 2rem;
+  box-shadow:  16px 16px 17px #cecece,
+  -16px -16px 17px #f2f2f2;
+ }
+
+
+ .submit {
+  font-size: 1em; /* Match the font size from the design */
+  padding: 10px 24px; /* Add padding to increase the size of the buttons */
+  border: 2px solid transparent; /* Default border to override for 'Sign Up' */
+  border-radius: 4px; /* Rounded corners */
+  margin: 8px; /* Space between buttons */
+  cursor: pointer; /* Change cursor to pointer on hover */
+  text-decoration: none; /* Remove underline from links */
+  display: inline-block; /* Allow for margins and padding on anchor tags */
+  width: 100%;
+  background-color: #34A853; /* Green background */
+  color: #ffffff; /* White text */
+  border-radius: 2rem;
+}
+
+.error {
+  color: red;
+}
