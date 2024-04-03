@@ -8,6 +8,7 @@ export default function Home() {
     return (
         <>
             <Navbar isUserAuthenticated={false} activeLink="dashboard" />
+            <Navbar isUserAuthenticated={false} activeLink="players" />
             <div className={styles.Home}>
                 <div className={styles.Content}>
                     <h3 className={styles.h3}>Checkmate Analytics</h3>

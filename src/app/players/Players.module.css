@@ -1,18 +1,75 @@
-.Home {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #ffffff; /* Replace with the background color from your Figma design */
-  }
-  
-  .Content {
-    text-align: center; /* Centers the text */
-    margin-top: 150px;
-  }
-  
-  .h3 {
-    font-size: 24px; /* Adjust font size to match Figma design */
-    color: #333; /* Replace with the actual color from your Figma design */
-    margin-bottom: 20px; /* Adjust space between title and logo */
-  }
-  
+.mainDiv {
+  height: 100vh;
+  display: flex;
+  padding: 2rem;
+  flex-direction: column;
+  justify-content: center;
+  background-color: #22763A;
+  gap: 2rem;
+}
+
+.searchBarDiv {
+  background-color: white;
+  height: 20%;
+  border-radius: 2rem;
+  -webkit-box-shadow: 6px 6px 29px -4px rgba(0, 0, 0, 0.73);
+  -moz-box-shadow: 6px 6px 29px -4px rgba(0, 0, 0, 0.73);
+  box-shadow: 6px 6px 29px -4px rgba(0, 0, 0, 0.73);
+}
+
+.resultDiv {
+  background-color: white;
+  height: 30%;
+  border-radius: 2rem;
+  -webkit-box-shadow: 6px 6px 29px -4px rgba(0, 0, 0, 0.73);
+  -moz-box-shadow: 6px 6px 29px -4px rgba(0, 0, 0, 0.73);
+  box-shadow: 6px 6px 29px -4px rgba(0, 0, 0, 0.73);
+}
+
+.searchBox {
+  padding: 2rem;
+}
+
+.boxAndButton {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  padding-top: 5px;
+}
+
+.input { 
+  border: 3px solid #22763A;
+  border-radius: .5rem;
+  height: 3rem;
+  width: 40%;
+  -webkit-box-shadow: 6px 6px 29px -4px rgba(0, 0, 0, 0.73);
+  -moz-box-shadow: 6px 6px 29px -4px rgba(0, 0, 0, 0.73);
+  box-shadow: 6px 6px 29px -4px rgba(0, 0, 0, 0.73);
+}
+
+.searchBtn {
+  font-size: 1em; 
+  border-radius: .5rem;
+  border: none;
+  cursor: pointer;
+  text-decoration: none; 
+  display: inline-block; 
+  background-color: #34A853; 
+  color: #ffffff; 
+  -webkit-box-shadow: 6px 6px 29px -4px rgba(0, 0, 0, 0.73);
+  -moz-box-shadow: 6px 6px 29px -4px rgba(0, 0, 0, 0.73);
+  box-shadow: 6px 6px 29px -4px rgba(0, 0, 0, 0.73);
+}
+
+.playerName {
+  font-size: 2rem;
+  padding: 1rem;
+  padding-left: 2rem;
+}
+
+.border {
+  background-color: #22763A;
+  height: 5px;
+  margin-left: 2rem;
+  margin-right: 2rem
+}
