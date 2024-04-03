@@ -5,10 +5,13 @@ import styles from './Queries.module.css';
 export default function Queries() {
     return (
         <>
-            <Navbar isUserAuthenticated={true} activeLink="queries" />
-            <div className={styles.Home}>
-                <div className={styles.Content}>
-                    <h3 className={styles.h3}>Checkmate Analytics - Queries</h3>
+            <Navbar isUserAuthenticated={true} activeLink="dashboard" />
+            <div className={styles.mainDiv}>
+                <div className={styles.create}>
+                    
+                </div>
+                <div className={styles.results}>
+                
                 </div>
             </div>
         </>
