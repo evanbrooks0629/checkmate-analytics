@@ -52,18 +52,21 @@ export default function SignUp() {
         <>
             <Navbar isUserAuthenticated={false} activeLink="" />
             <div className={styles.Home}>
-                <div className={styles.Content}>
-                    <h3 className={styles.h3}>Checkmate Analytics - Sign Up</h3>
-                    <form className={styles.form} onSubmit={onSubmit}>
-                        <label className={styles.label} htmlFor="email">Email</label>
-                        <input className={styles.input} type="text" name="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-                        <label className={styles.label} htmlFor="password">Password</label>
-                        <input className={styles.input} type="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-                        <label className={styles.label} htmlFor="confirmPassword">Confirm Password</label>
-                        <input className={styles.input} type="password" name="confirmPassword" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
-                        <button className={styles.submit} type="submit">Submit</button>
-                        {Object.keys(errors).length > 0 && renderErrorMessages()}
-                    </form>
+                <div className={styles.FormContainer}>
+                    <div className={styles.Content}>
+                        <h3 className={styles.h3}>Checkmate Analytics - Sign Up</h3>
+                        <form className={styles.form} onSubmit={onSubmit}>
+                            <label className={styles.label} htmlFor="email">Email</label>
+                            <input className={styles.input} type="text" name="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                            <label className={styles.label} htmlFor="password">Password</label>
+                            <input className={styles.input} type="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                            <label className={styles.label} htmlFor="confirmPassword">Confirm Password</label>
+                            <input className={styles.input} type="password" name="confirmPassword" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+                            <button className={styles.submit} type="submit">Submit</button>
+                            {Object.keys(errors).length > 0 && renderErrorMessages()}
+                        </form>
+                    </div>
+                    <a href="/" className={styles.back}>Go Back</a>
                 </div>
             </div>
         </>

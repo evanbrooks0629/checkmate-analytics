@@ -4,12 +4,18 @@
     justify-content: center;
     background-color: #ffffff; /* Replace with the background color from your Figma design */
   }
+
+  .FormContainer {
+    display: flex; /* Use flexbox */
+    flex-direction: column; /* Stack children vertically */
+    align-items: flex-start; /* Align children to the start (left side) */
+  }
   
   .Content {
     margin-top: 150px;
     border: 1px solid black;
     border-radius: 1rem;
-    height: 30rem;
+    height: 25rem;
     padding: 1rem;
   }
   
@@ -39,7 +45,7 @@
   padding: 10px 24px; /* Add padding to increase the size of the buttons */
   border: 2px solid transparent; /* Default border to override for 'Sign Up' */
   border-radius: 4px; /* Rounded corners */
-  margin: 8px; /* Space between buttons */
+  margin-top: 8px; /* Space between buttons */
   cursor: pointer; /* Change cursor to pointer on hover */
   text-decoration: none; /* Remove underline from links */
   display: inline-block; /* Allow for margins and padding on anchor tags */
@@ -51,4 +57,13 @@
 
 .error {
   color: red;
+}
+
+.back {
+  margin-top: 1rem;
+  color: #000000;
+}
+
+.back:visited {
+  color: #000000;
 }
