@@ -1,12 +1,37 @@
+'use client'
 import '../globals.css'
 import Navbar from '../../components/Navbar';
 import styles from './Dashboard.module.css';
+import { useEffect, useState } from 'react';
+
+function GamesList() {
+    const [games, setGames] = useState([]);
+
+    useEffect(() => {
+        fetch('http://localhost:1234/api/games')
+            .then(response => response.json())
+            .then(data => setGames(data))
+            .catch(error => console.error('Error fetching data:', error));
+    }, []);
+
+    return (
+        <div>
+            <h2>Games List</h2>
+            <ul>
+                {games.map(game => (
+                    <li key={game.ID}>{game.NAME}</li> // Adjust based on your actual data structure
+                ))}
+            </ul>
+        </div>
+    );
+}
 
 export default function Dashboard() {
     //Create query logic
     const createQuery = () => {
         //window.location.href = '/queries/create';
     }
+    const games = GamesList();
 
     return (
         <>
@@ -34,8 +59,14 @@ export default function Dashboard() {
                         </div>
                     </div>
                     <div className={styles.BottomGrid}>
-                        <h3 className={styles.BottomTitle}>Search Players</h3>
-                        <input className={styles.SearchBar}></input>
+                        <h3 className={styles.BottomTitle}>Find a Player</h3>
+                        <div className={styles.SearchRow}>
+                            <input className={styles.SearchBar}></input>
+                            <button className={styles.btn_primary}>Search</button>
+                        </div>
+                        <div className={styles.SearchResults}>
+                            {games}
+                        </div>
                     </div>
                 </div>
             </div>
