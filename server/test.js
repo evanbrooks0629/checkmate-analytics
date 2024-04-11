@@ -22,7 +22,7 @@ app.get('/api/games', async (req, res) => {
             password      : process.env.PASSWORD,
             connectString : "oracle.cise.ufl.edu:1521/orcl"
         });
-        const result = await connection.execute(`SELECT * FROM Game FETCH NEXT 10 ROWS ONLY`);
+        const result = await connection.execute(`SELECT * FROM Game ORDER BY ENDDATETIME DESC FETCH NEXT 100 ROWS ONLY `);
         res.json(result.rows);
     } catch (err) {
         console.error(err);
