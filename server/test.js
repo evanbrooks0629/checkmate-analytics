@@ -27,8 +27,12 @@ const dbConfig = {
 app.get('/api/games', async (req, res) => {
     let connection;
     try {
-        connection = await oracledb.getConnection(dbConfig);
-        const result = await connection.execute(`SELECT * FROM Game FETCH NEXT 10 ROWS ONLY`);
+        connection = await oracledb.getConnection({
+            user          : "cmcloon",
+            password      : process.env.PASSWORD,
+            connectString : "oracle.cise.ufl.edu:1521/orcl"
+        });
+        const result = await connection.execute(`SELECT * FROM Game ORDER BY ENDDATETIME DESC FETCH NEXT 100 ROWS ONLY `);
         res.json(result.rows);
     } catch (err) {
         console.error(err);

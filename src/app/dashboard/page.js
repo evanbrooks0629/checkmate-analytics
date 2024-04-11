@@ -3,6 +3,7 @@ import '../globals.css'
 import Navbar from '../../components/Navbar';
 import styles from './Dashboard.module.css';
 import { useEffect, useState } from 'react';
+import moment from 'moment';
 
 function GamesList() {
     const [games, setGames] = useState([]);
@@ -18,10 +19,12 @@ function GamesList() {
     }, []);
 
     return (
-        <div>
-            <ul style={{color: 'black'}}>
+        <div className={styles.GameListContainer}>
+            <ul className={styles.GameList}>
+                <li style={{fontWeight: 'bold'}}>WhitePlayerID | BlackPlayerID | Date | Outcome</li>
+                <div style={{borderBottom:'2px solid black', marginTop: '5px'}}></div>
                 {games.map(game => (
-                    <li key={game.GAMEID}>{game.TERMINATION}</li>
+                    <li key={game.GAMEID}>{game.WHITEPLAYERID} | {game.BLACKPLAYERID} | {moment(game.ENDDATETIME).format('MM-DD-YYYY HH:mm:ss')} | {game.TERMINATION}</li>
                 ))}
             </ul>
         </div>
@@ -51,9 +54,9 @@ export default function Dashboard() {
                         <p className={styles.p}>View our free charts which show different data over time</p>
                     </div>
                     <div className={styles.BottomGrid}>
-                        <h3 className={styles.BottomTitle}>Recent Queries</h3>
+                        <h3 className={styles.BottomTitle}>Recent Grandmaster Games</h3>
                         <div className={styles.RecentBox}>
-                            {/* Fill in recent query logic here */}
+                            {games}
                         </div>
                     </div>
                     <div className={styles.BottomGrid}>
@@ -63,7 +66,6 @@ export default function Dashboard() {
                             <button className={styles.btn_primary}>Search</button>
                         </div>
                         <div className={styles.SearchResults}>
-                            {games}
                         </div>
                     </div>
                 </div>
