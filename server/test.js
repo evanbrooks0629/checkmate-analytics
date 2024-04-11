@@ -28,9 +28,9 @@ app.get('/api/games', async (req, res) => {
     let connection;
     try {
         connection = await oracledb.getConnection({
-            user          : "cmcloon",
-            password      : process.env.PASSWORD,
-            connectString : "oracle.cise.ufl.edu:1521/orcl"
+            user: "cmcloon",
+            password: process.env.PASSWORD,
+            connectString: "oracle.cise.ufl.edu:1521/orcl"
         });
         const result = await connection.execute(`SELECT * FROM Game ORDER BY ENDDATETIME DESC FETCH NEXT 100 ROWS ONLY `);
         res.json(result.rows);
@@ -47,6 +47,7 @@ app.get('/api/games', async (req, res) => {
         }
     }
 });
+
 
 app.get('/api/players/:name', async (req, res) => {
     const playerName = req.params.name;  // Access the player name from URL parameters
@@ -112,6 +113,48 @@ app.get('/api/players', async (req, res) => {
         }
     }
 });
+
+// Query 2 Time Control Preferences by Player Rating
+// This query would reveal preferences for time control settings across different Elo rating brackets, 
+// showing trends in the popularity of blitz, rapid, and standard time controls among different skill levels.
+app.get('/api/time-control', async (req, res) => {
+    let connection;
+    try {
+        connection = await oracledb.getConnection({
+            user: "cmcloon",
+            password: process.env.PASSWORD,
+            connectString: "oracle.cise.ufl.edu:1521/orcl"
+        });
+        const result = await connection.execute(`
+        SELECT 
+            TimeControl, 
+            FLOOR(p.Elo / 100) * 100 AS EloBracket, 
+            COUNT(*) AS GameCount 
+        FROM 
+            Game g 
+            JOIN Player p ON g.WhitePlayerID = p.PlayerID OR g.BlackPlayerID = p.PlayerID 
+        GROUP BY 
+            TimeControl, 
+            FLOOR(p.Elo / 100) * 100 
+        ORDER BY 
+            EloBracket, 
+            GameCount DESC
+    `);
+            res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error fetching data from Game table");
+    } finally {
+        if (connection) {
+            try {
+                await connection.close();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+    }
+});
+
 
 
 
