@@ -10,16 +10,18 @@ function GamesList() {
     useEffect(() => {
         fetch('http://localhost:1234/api/games')
             .then(response => response.json())
-            .then(data => setGames(data))
+            .then(data => {
+                setGames(data);
+                console.log(games);
+            })
             .catch(error => console.error('Error fetching data:', error));
     }, []);
 
     return (
         <div>
-            <h2>Games List</h2>
-            <ul>
+            <ul style={{color: 'black'}}>
                 {games.map(game => (
-                    <li key={game.ID}>{game.NAME}</li> // Adjust based on your actual data structure
+                    <li key={game.GAMEID}>{game.TERMINATION}</li>
                 ))}
             </ul>
         </div>
@@ -28,11 +30,7 @@ function GamesList() {
 
 export default function Dashboard() {
     //Create query logic
-    const createQuery = () => {
-        //window.location.href = '/queries/create';
-    }
     const games = GamesList();
-
     return (
         <>
             <Navbar isUserAuthenticated={true} activeLink="dashboard" />
@@ -40,15 +38,15 @@ export default function Dashboard() {
                 <div className={styles.Content}>
                     <div className={styles.TopGrid}>
                         <div className={styles.QueryRow}>
-                            <h2 className={styles.Title}>Create a Query</h2>
-                            <button className={styles.btn_primary} onClick={createQuery()}>Create Query</button>
+                            <h2 className={styles.Title}>View a Query</h2>
+                            <button className={styles.btn_primary} onClick={() => window.location.href = '/queries'}>See Queries</button>
                         </div>
                         <p className={styles.p}>Effortlessly craft queries to find the exact data you are looking for</p>
                     </div>
                     <div className={styles.TopGrid}>
                         <div className={styles.QueryRow}>
                             <h2 className={styles.Title}>View Charts</h2>
-                            <button className={styles.btn_primary} onClick={createQuery()}>See Statistics</button>
+                            <button className={styles.btn_primary} onClick={() => window.location.href = '/charts'}>See Statistics</button>
                         </div>
                         <p className={styles.p}>View our free charts which show different data over time</p>
                     </div>
