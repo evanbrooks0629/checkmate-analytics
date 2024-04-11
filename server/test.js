@@ -56,8 +56,11 @@ app.get('/api/players/:name', async (req, res) => {
         connection = await oracledb.getConnection(dbConfig);
         // Proper SQL query to find a player by name
         const result = await connection.execute(
-            `SELECT * FROM Player WHERE RealName = :name OR PlayerName = :name FETCH NEXT 1 ROWS ONLY`, 
-            [playerName, playerName],  // Use parameter binding to secure the query
+            `SELECT * FROM Player
+            WHERE RealName LIKE :name
+               OR PlayerName LIKE :name
+            FETCH NEXT 1 ROWS ONLY`,
+            { name: '%' + playerName + '%' },  // Binding the 'name' parameter with '%' wildcards
             { outFormat: oracledb.OUT_FORMAT_OBJECT }  // Output as object for easier handling
         );
 
