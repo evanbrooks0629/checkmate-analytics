@@ -8,6 +8,19 @@
   .Content {
     text-align: center; /* Centers the text */
     margin-top: 150px;
+    margin-bottom: 150px;
+    background-color: white;
+    min-height: 650px;
+    min-width: 1400px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    -webkit-box-shadow: 6px 6px 29px -4px rgba(0, 0, 0, 0.73);
+    -moz-box-shadow: 6px 6px 29px -4px rgba(0, 0, 0, 0.73);
+    box-shadow: 6px 6px 29px -4px rgba(0, 0, 0, 0.73);
+    padding: 10px;
+    border: 4px solid #22763A;
   }
   
   .h3 {

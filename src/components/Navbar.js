@@ -9,7 +9,7 @@ export default function Navbar (props) {
   const [isUserAuthenticated, setIsUserAuthenticated] = React.useState(props.isUserAuthenticated);
   return (
     <nav className={styles.nav}>
-        <Link href="/">
+        <Link href="/dashboard">
           <Image 
             src="/images/CheckMateLogo.png"
             height={80}
