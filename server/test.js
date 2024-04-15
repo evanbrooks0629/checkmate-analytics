@@ -117,7 +117,7 @@ app.get('/api/players', async (req, res) => {
     }
 });
 
-// Query 2 Time Control Preferences by Player Rating
+// Query 1 Time Control Preferences by Player Rating
 // This query would reveal preferences for time control settings across different Elo rating brackets, 
 // showing trends in the popularity of blitz, rapid, and standard time controls among different skill levels.
 app.get('/api/time-control', async (req, res) => {
@@ -158,7 +158,7 @@ app.get('/api/time-control', async (req, res) => {
     }
 });
 
-// Query 3
+// Query 2
 // Yearly Performance Metrics by Top Quartile Players
 // This query focuses on players in the top 25% based on Elo rating 
 // evaluating their performance metrics across the years.

@@ -5,6 +5,39 @@ import styles from "./Queries.module.css";
 import { useState } from "react";
 
 function runQuery(queryNumber) {
+  const q2String = `WITH PlayerPerformance AS (
+    SELECT
+      EXTRACT(YEAR FROM CAST(G.EndDateTime AS DATE)) AS Year,
+      P.PlayerID,
+      AVG(P.Accuracy) AS Average_Accuracy,
+      PERCENT_RANK() OVER (
+        PARTITION BY EXTRACT(YEAR FROM CAST(G.EndDateTime AS DATE))
+        ORDER BY P.Elo DESC
+      ) AS Elo_Percentile
+    FROM 
+      Game G
+    JOIN 
+      Player P ON P.PlayerID = G.WhitePlayerID OR P.PlayerID = G.BlackPlayerID
+    WHERE
+      ACCURACY != '-1'
+    GROUP BY
+      EXTRACT(YEAR FROM CAST(G.EndDateTime AS DATE)),
+      P.PlayerID,
+      P.Elo
+  )
+  SELECT
+    Year,
+    COUNT(PlayerID) AS NumberOfPlayers,
+    AVG(Average_Accuracy) AS Avg_Accuracy
+  FROM 
+    PlayerPerformance
+  WHERE 
+    Elo_Percentile <= 0.25 
+  GROUP BY
+    Year
+  ORDER BY
+    Year`;
+
   switch (queryNumber) {
     case 1:
       return (
@@ -22,12 +55,10 @@ function runQuery(queryNumber) {
             SQL Source Code
           </p>
           <p style={{ fontFamily: "sans-serif, Source Code Pro" }}>
-            SELECT m.ECO, m.ECOName, AVG(p.Elo) AS AverageElo, COUNT() AS
-            MoveUsageCount, SUM(CASE WHEN g.Outcome = 'win' AND p.Color =
-            'White' THEN 1 ELSE 0 END) / COUNT() * 100.0 AS SuccessRate FROM
-            Moves m JOIN Game g ON g.MovesID = m.MovesID JOIN Player p ON
-            p.PlayerID = g.WhitePlayerID OR p.PlayerID = g.BlackPlayerID GROUP
-            BY m.ECO, m.ECOName ORDER BY AverageElo DESC, MoveUsageCount DESC;
+            SELECT TimeControl, FLOOR(p.Elo / 100) * 100 AS EloBracket, COUNT(*)
+            AS GameCount FROM Game g JOIN Player p ON g.WhitePlayerID =
+            p.PlayerID OR g.BlackPlayerID = p.PlayerID GROUP BY TimeControl,
+            FLOOR(p.Elo / 100) * 100 ORDER BY EloBracket, GameCount DESC
           </p>
           <a href="/charts">View Result Chart</a>
         </div>
@@ -38,11 +69,20 @@ function runQuery(queryNumber) {
           <p style={{ textDecoration: "underline", fontWeight: "bold" }}>
             Result of Query 2
           </p>
-          <p>Description: 2</p>
+          <p>
+            Description: This SQL query focuses on assessing the performance
+            metrics of chess players belonging to the top 25% based on their Elo
+            rating. By analyzing factors such as average accuracy across games
+            and the Elo percentile of top players over the years, this query
+            aims to provide insights into the performance trends of elite
+            players in major chess events.
+          </p>
           <p style={{ textDecoration: "underline", fontWeight: "bold" }}>
             SQL Source Code
           </p>
-          <p style={{ fontFamily: "sans-serif, Source Code Pro" }}>2</p>
+          <p style={{ fontFamily: "sans-serif, Source Code Pro" }}>
+            {q2String}
+          </p>
           <a href="/charts">View Result Chart</a>
         </div>
       );
@@ -120,9 +160,7 @@ export default function Queries() {
           <div className={styles.gridLayout}>
             <div className={styles.queries}>
               <p>Query 1</p>
-              <p>
-                Elo Rating Distribution Over Time for Top Percentile of Players
-              </p>
+              <p>Time Control Preferences by Player Rating</p>
               <button onClick={() => setResult(runQuery(1))}>
                 See Source Code
               </button>
@@ -132,7 +170,7 @@ export default function Queries() {
             </div>
             <div className={styles.queries}>
               <p>Query 2</p>
-              <p>Time Control Preferences by Player Rating</p>
+              <p>Yearly Performance Metrics of Top Quartile Players</p>
               <button onClick={() => setResult(runQuery(2))}>
                 See Source Code
               </button>
