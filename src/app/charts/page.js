@@ -2,11 +2,23 @@
 import "../globals.css";
 import Navbar from "../../components/Navbar";
 import styles from "./Charts.module.css";
+import TimeControlChart from "@/components/TimeControl";
+
 import { useEffect, useState } from "react";
 
 export default function Charts() {
 
-  useEffect(() => {setChart(handleChart(1))}, []);
+  const [timeControl, setTimeControl] = useState([]);
+  useEffect(() => {
+    fetch("http://localhost:1234/api/time-control")
+      .then((response) => response.json())
+      .then((data) => {
+        setTimeControl(data);
+        console.log(data); // Check if data is received correctly // Update the chart after data is received
+      })
+      .catch((error) => console.error("Error fetching data:", error));
+  }, []);
+  
 
   const [chart, setChart] = useState(null);
   
@@ -14,7 +26,9 @@ export default function Charts() {
   const handleChart = async (query) => {
     switch (query) {
       case 1:
-        return <div className={styles.chartContent}>Chart 1</div>;
+        return <div className={styles.chartContent}>
+          <TimeControlChart data={timeControl} />
+        </div>;
       case 2:
         return <div className={styles.chartContent}>Chart 2</div>;
       case 3:

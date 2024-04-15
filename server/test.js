@@ -95,7 +95,7 @@ app.get('/api/players', async (req, res) => {
     try {
         connection = await oracledb.getConnection(dbConfig);
         const result = await connection.execute(
-            `SELECT * FROM Player FETCH NEXT 50 ROWS ONLY`  // Fetch first 50 rows from Player table
+            `SELECT DISTINCT PLAYERNAME FROM Player FETCH NEXT 1000 ROWS ONLY`  // Fetch first 50 rows from Player table
         );
 
         if (result.rows.length > 0) {
