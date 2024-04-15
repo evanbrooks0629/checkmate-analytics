@@ -281,7 +281,7 @@ export default function Queries() {
             </div>
             <div className={styles.queries}>
               <p>Query 4</p>
-              <p>Most popular chess openings and their win rates by year </p>
+              <p>Popular Chess Openings and their Win Rates by Year </p>
               <button onClick={() => setResult(runQuery(4))}>
                 See Source Code
               </button>

@@ -7,6 +7,7 @@ import styles from "./Charts.module.css";
 import TimeControlChart from "@/components/TimeControl";
 import MajorEventsPerformanceChart from "@/components/MajorEventsPerformanceChart";
 import OpeningEvolutionChart from "@/components/OpeningEvolutionChart";
+import OpeningWinRateChart from "@/components/OpeningWinRateChart";
 
 export default function Charts() {
   
@@ -25,6 +26,7 @@ export default function Charts() {
   const [timeControl, setTimeControl] = useState([]);
   const [majorEvents, setMajorEvents] = useState([]);
   const [evolutionData, setEvolutionData] = useState([]); 
+  const [winRate, setWinRate] = useState([]);
 
   useEffect(() => {
     fetch("http://localhost:1234/api/time-control")
@@ -40,6 +42,11 @@ export default function Charts() {
     fetch("http://localhost:1234/api/opening-evolution")
       .then((response) => response.json())
       .then((data) => setEvolutionData(data))
+      .catch((error) => console.error("Error fetching data:", error));
+
+      fetch("http://localhost:1234/api/opening-win-rate")
+      .then((response) => response.json())
+      .then((data) => setWinRate(data))
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
   
@@ -60,7 +67,7 @@ export default function Charts() {
       case 3:
         return <div className={styles.chartContent}><OpeningEvolutionChart data={evolutionData}/></div>;
       case 4:
-        return <div className={styles.chartContent}>Chart 4</div>;
+        return <div className={styles.chartContent}><OpeningWinRateChart data={winRate} /></div>;
       case 5:
         return <div className={styles.chartContent}>Chart 5</div>;
       case 6:

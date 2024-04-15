@@ -378,9 +378,6 @@ app.get('/api/opening-win-rate', async (req, res) => {
 });
 
 
-
-
-
 //User creation
 app.post('/api/user-creation', async (req, res) => {
     const username = req.body.username;
