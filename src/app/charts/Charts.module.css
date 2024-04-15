@@ -29,3 +29,26 @@
     margin-bottom: 20px; /* Adjust space between title and logo */
   }
   
+  .btn_row {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  .btn_row button {
+    border: 2px solid #22763A;
+    background-color: #22763A;
+    color: #ffffff;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    padding-left: 60px;
+    padding-right: 60px;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+
+  .btn_row button:hover {
+    border: 2px solid #48cd6b;
+    background-color: #48cd6b;
+    cursor: pointer;
+  }

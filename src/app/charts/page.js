@@ -2,26 +2,29 @@
 import "../globals.css";
 import Navbar from "../../components/Navbar";
 import styles from "./Charts.module.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Charts() {
+
+  useEffect(() => {setChart(handleChart(1))}, []);
+
   const [chart, setChart] = useState(null);
   
   //INSERT CHARTS IN CASE BELOW
   const handleChart = async (query) => {
     switch (query) {
       case 1:
-        return <div>Chart 1</div>;
+        return <div className={styles.chartContent}>Chart 1</div>;
       case 2:
-        return <div>Chart 2</div>;
+        return <div className={styles.chartContent}>Chart 2</div>;
       case 3:
-        return <div>Chart 3</div>;
+        return <div className={styles.chartContent}>Chart 3</div>;
       case 4:
-        return <div>Chart 4</div>;
+        return <div className={styles.chartContent}>Chart 4</div>;
       case 5:
-        return <div>Chart 5</div>;
+        return <div className={styles.chartContent}>Chart 5</div>;
       case 6:
-        return <div>Chart 6</div>;
+        return <div className={styles.chartContent}>Chart 6</div>;
     }
   };
 
