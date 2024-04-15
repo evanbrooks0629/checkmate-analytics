@@ -1,0 +1,34 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Run frontend",
+            "url" : "http://localhost:3000",
+            "webRoot": "${workspaceFolder}",
+            "sourceMaps": true,
+            "resolveSourceMapLocations": [
+                "${workspaceFolder}/**",
+                "!**/node_modules/**"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Run backend",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}\\server\\test.js",
+            "envFile": "${workspaceFolder}\\.env.local"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "FrontEnd/BackEnd",
+            "configurations": ["Run frontend", "Run backend"],
+            "stopAll": true
+        }
+    ]
+}

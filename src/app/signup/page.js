@@ -33,6 +33,18 @@ export default function SignUp() {
         e.preventDefault();
         if (validateForm()) {
             console.log("Form is valid. Submitting data...");
+
+
+            fetch('http://localhost:1234/api/user-creation', {method: "POST", headers: {'Content-Type': 'application/json'},
+             body: JSON.stringify({
+                "username" : email,
+                "password" : password
+             })})
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log(data);
+                });
+
         } else {
             console.log("Form has errors.");
         }

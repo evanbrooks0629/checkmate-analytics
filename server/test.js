@@ -1,10 +1,12 @@
 const express = require('express');
 const oracledb = require('oracledb');
+oracledb.autoCommit=true;
 const dotenv = require('dotenv');
 const cors = require('cors');
+const crypto = require('crypto');
 
 dotenv.config({
-    path: "../.env.local"
+    path: __dirname +  "/../.env.local"
 });
 
 const app = express();
@@ -22,6 +24,7 @@ const dbConfig = {
     connectString: "oracle.cise.ufl.edu:1521/orcl"
 };
 
+const secret = process.env.HASHSECRET;
 
 // GET endpoint to fetch games
 app.get('/api/games', async (req, res) => {
@@ -154,6 +157,105 @@ app.get('/api/time-control', async (req, res) => {
         }
     }
 });
+
+
+//User creation
+app.post('/api/user-creation', async(req, res) => {
+    const username = req.body.username;
+    const password = crypto.createHmac('sha256', secret).update(req.body.password).digest('hex');
+
+    try{
+        connection = await oracledb.getConnection(dbConfig);
+        
+        //check if username exists
+        const userNameCheck = await connection.execute(
+            `SELECT * FROM Users WHERE userName = :username`,
+            {username : username}
+        );
+        
+        if(userNameCheck.rows.length > 0){
+            res.status(403).send("Username already exists");
+            return;
+        }
+
+        //otherwise find next id and make new user
+        const newIDresult = await connection.execute(
+            'SELECT MAX(UserID) AS NewID FROM Users'
+        );
+
+        const newID = newIDresult.rows[0].NEWID + 1;
+        
+        const result = await connection.execute(
+            `INSERT INTO Users(UserID, userName, password)
+            VALUES (:userID, :userName, :password)`,
+            {userID : newID, userName: username, password: password}
+        )
+        res.send(result.rows).status(200);
+    }
+    catch(err){
+        console.error('Database query error', err.message);
+        res.status(500).send("Error creating new user");
+    }
+    finally{
+        if (connection) {
+            try {
+                await connection.close();  // Properly close the database connection
+            } catch (err) {
+                console.error('Error closing connection', err);
+            }
+        }
+    }
+
+
+})
+
+
+//Verifying password for specific username
+app.get('/api/user-verification/:username/:password', async(req, res) => {
+
+    const userName = req.params.username;  // Access the user name from URL parameters
+    const password = crypto.createHmac('sha256', secret).update(req.params.password).digest('hex');
+    let connection;
+
+    try {
+        connection = await oracledb.getConnection(dbConfig);
+        // Proper SQL query to find a player by name
+        const result = await connection.execute(
+            `SELECT * FROM Users
+            WHERE UserName = :name
+            FETCH NEXT 1 ROWS ONLY`,
+            { name: userName },  // Binding the 'username' parameter with '%' wildcards
+            { outFormat: oracledb.OUT_FORMAT_OBJECT }  // Output as object for easier handling
+        );
+
+        if (result.rows.length > 0) {
+            //Check if passwords are equal
+            if(result.rows[0].PASSWORD == password ){
+                res.json(result.rows[0]);  // Send player data back to client, assuming only one match is expected
+            }
+            else{
+                res.status(403).send("Verification Failed");
+            }
+        } else {
+            res.status(404).send('User not found');  // Appropriate message if no user is found
+        }
+    } catch (err) {
+        console.error('Database query error', err.message);
+        res.status(500).send("Error fetching user data");
+    } finally {
+        if (connection) {
+            try {
+                await connection.close();  // Properly close the database connection
+            } catch (err) {
+                console.error('Error closing connection', err);
+            }
+        }
+    }
+
+
+
+})
+
 
 
 
