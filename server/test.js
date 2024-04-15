@@ -172,14 +172,14 @@ app.get('/api/major-events-performance', async (req, res) => {
             connectString: "oracle.cise.ufl.edu:1521/orcl"
         });
 
-        const sqlQuery = `
-            WITH PlayerPerformance AS (
+        const sqlQuery = 
+            `WITH PlayerPerformance AS (
                 SELECT
-                    EXTRACT(YEAR FROM CAST(G.EndDateTime AS DATE)) AS Year,
+                    EXTRACT(YEAR FROM G.ENDDATETIME) AS Year,
                     P.PlayerID,
                     AVG(P.Accuracy) AS Average_Accuracy,
                     PERCENT_RANK() OVER (
-                        PARTITION BY EXTRACT(YEAR FROM CAST(G.EndDateTime AS DATE))
+                        PARTITION BY EXTRACT(YEAR FROM G.ENDDATETIME)
                         ORDER BY P.Elo DESC
                     ) AS Elo_Percentile
                 FROM 
@@ -187,9 +187,9 @@ app.get('/api/major-events-performance', async (req, res) => {
                 JOIN 
                     Player P ON P.PlayerID = G.WhitePlayerID OR P.PlayerID = G.BlackPlayerID
                 WHERE
-                    ACCURACY != '-1
+                    P.Accuracy != -1
                 GROUP BY
-                    EXTRACT(YEAR FROM CAST(G.EndDateTime AS DATE)),
+                    EXTRACT(YEAR FROM G.ENDDATETIME),
                     P.PlayerID,
                     P.Elo
             )
@@ -200,19 +200,19 @@ app.get('/api/major-events-performance', async (req, res) => {
             FROM 
                 PlayerPerformance
             WHERE 
-                Elo_Percentile <= 0.25 
+                Elo_Percentile <= 0.25
             GROUP BY
                 Year
             ORDER BY
-                Year
-        `;
+                Year DESC`
+        ;
 
         const result = await connection.execute(sqlQuery);
 
         res.json(result.rows);
     } catch (err) {
         console.error(err);
-        res.status(500).send("Error fetching data from Game table");
+        res.status(500).send("Error fetching data from the database");
     } finally {
         if (connection) {
             try {
@@ -224,7 +224,7 @@ app.get('/api/major-events-performance', async (req, res) => {
     }
 });
 
-// Query 4
+// Query 3
 //  Evolution of Opening Strategies Among Top Players
 //This query shows the use of different chess openings (ECO codes) by the top 5% of players varies over time, highlighting shifts in strategic preferences.
 app.get('/api/opening-evolution', async (req, res) => {

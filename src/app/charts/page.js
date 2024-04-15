@@ -1,34 +1,45 @@
 "use client";
+import { useEffect, useState } from "react";
+import { useRouter } from 'next/navigation'; // Ensure this is correctly imported
 import "../globals.css";
 import Navbar from "../../components/Navbar";
 import styles from "./Charts.module.css";
 import TimeControlChart from "@/components/TimeControl";
-
-import { useEffect, useState } from "react";
-import { useRouter } from 'next/navigation'
+import MajorEventsPerformanceChart from "@/components/MajorEventsPerformanceChart";
+import OpeningEvolutionChart from "@/components/OpeningEvolutionChart";
 
 export default function Charts() {
   
   const { push } = useRouter();
-  const [authenticated, setAuthenticated] = useState(localStorage.getItem("authenticated") === 'true');
-
-  if(!authenticated){
-
-      useEffect(() => {
-          push('/');
-      }, []);
-
-      return <></>
-  }
+  const [authenticated, setAuthenticated] = useState(false);  // Default to false or null
   
+  useEffect(() => {
+    // This code now runs only on the client-side
+    const auth = localStorage.getItem("authenticated") === 'true';
+    setAuthenticated(auth);
+    if (!auth) {
+      push('/');
+    }
+  }, [push]);
+
   const [timeControl, setTimeControl] = useState([]);
+  const [majorEvents, setMajorEvents] = useState([]);
+  const [evolutionData, setEvolutionData] = useState([]); 
+
   useEffect(() => {
     fetch("http://localhost:1234/api/time-control")
       .then((response) => response.json())
-      .then((data) => {
-        setTimeControl(data);
-        console.log(data); // Check if data is received correctly // Update the chart after data is received
-      })
+      .then((data) => setTimeControl(data))
+      .catch((error) => console.error("Error fetching data:", error));
+
+    fetch("http://localhost:1234/api/major-events-performance")
+      .then((response) => response.json())
+      .then((data) => setMajorEvents(data))
+      .catch((error) => console.error("Error fetching data:", error));
+
+    fetch("http://localhost:1234/api/opening-evolution")
+      .then((response) => response.json())
+      .then((data) => setEvolutionData(data))
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
   
@@ -43,9 +54,11 @@ export default function Charts() {
           <TimeControlChart data={timeControl} />
         </div>;
       case 2:
-        return <div className={styles.chartContent}>Chart 2</div>;
+        return <div className={styles.chartContent}>
+          <MajorEventsPerformanceChart data={majorEvents}/>
+        </div>;
       case 3:
-        return <div className={styles.chartContent}>Chart 3</div>;
+        return <div className={styles.chartContent}><OpeningEvolutionChart data={evolutionData}/></div>;
       case 4:
         return <div className={styles.chartContent}>Chart 4</div>;
       case 5:
