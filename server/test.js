@@ -95,7 +95,7 @@ app.get('/api/players', async (req, res) => {
     try {
         connection = await oracledb.getConnection(dbConfig);
         const result = await connection.execute(
-            `SELECT DISTINCT PLAYERNAME FROM Player FETCH NEXT 1000 ROWS ONLY`  // Fetch first 1000 rows from Player table
+            `SELECT distinct outcome from Game FETCH NEXT 1000 ROWS ONLY`  // Fetch first 1000 rows from Player table
         );
 
         if (result.rows.length > 0) {
@@ -162,7 +162,6 @@ app.get('/api/time-control', async (req, res) => {
 // Yearly Performance Metrics by Top Quartile Players
 // This query focuses on players in the top 25% based on Elo rating 
 // evaluating their performance metrics across the years.
-
 app.get('/api/major-events-performance', async (req, res) => {
     let connection;
     try {
@@ -204,8 +203,9 @@ app.get('/api/major-events-performance', async (req, res) => {
             GROUP BY
                 Year
             ORDER BY
-                Year DESC`
-        ;
+                Year DESC 
+        `;
+
 
         const result = await connection.execute(sqlQuery);
 
@@ -301,7 +301,81 @@ app.get('/api/opening-evolution', async (req, res) => {
     }
 });
 
+// Query 5
+// most popular chess openings (using the ECO codes) and their respective win rates by year.
+app.get('/api/opening-win-rate', async (req, res) => {
+    let connection;
+    try {
+        connection = await oracledb.getConnection({
+            user: "cmcloon",
+            password: process.env.PASSWORD,
+            connectString: "oracle.cise.ufl.edu:1521/orcl"
+        });
 
+        const sqlQuery = `
+        WITH OpeningUsage AS (
+            SELECT 
+                m.ECO,
+                m.ECOName,
+                EXTRACT(YEAR FROM g.ENDDATETIME) AS Year,
+                COUNT(*) AS GamesPlayed,
+                COUNT(CASE WHEN g.Outcome = '1-0' THEN 1 END) AS WhiteWins,
+                COUNT(CASE WHEN g.Outcome = '0-1' THEN 1 END) AS BlackWins,
+                COUNT(CASE WHEN g.Outcome = '1/2-1/2' THEN 1 END) AS Draws
+            FROM 
+                Moves m
+            JOIN 
+                Game g ON m.MovesID = g.MovesID
+            GROUP BY 
+                m.ECO, m.ECOName, EXTRACT(YEAR FROM g.ENDDATETIME)
+        ),
+        OpeningWinRates AS (
+            SELECT 
+                ECO,
+                ECOName,
+                Year,
+                GamesPlayed,
+                WhiteWins,
+                BlackWins,
+                Draws,
+                ROUND(((WhiteWins + BlackWins) / CAST(GamesPlayed AS FLOAT)) * 100, 2) AS WinRate,
+                ROUND((Draws / CAST(GamesPlayed AS FLOAT)) * 100, 2) AS DrawRate
+            FROM 
+                OpeningUsage
+        )
+        SELECT 
+            ECO,
+            ECOName,
+            Year,
+            GamesPlayed,
+            WinRate,
+            DrawRate
+        FROM 
+            OpeningWinRates
+        WHERE 
+            GamesPlayed > (
+                SELECT AVG(GamesPlayed) * 1.5 FROM OpeningUsage WHERE Year = OpeningWinRates.Year
+            )
+        ORDER BY 
+            Year, WinRate DESC
+        `;
+
+        const result = await connection.execute(sqlQuery);
+
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error fetching data from Game table");
+    } finally {
+        if (connection) {
+            try {
+                await connection.close();
+            } catch (err) {
+                console.error("Error closing the connection", err);
+            }
+        }
+    }
+});
 
 
 
