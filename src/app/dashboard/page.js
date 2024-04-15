@@ -4,9 +4,12 @@ import Navbar from "../../components/Navbar";
 import styles from "./Dashboard.module.css";
 import { useEffect, useState } from "react";
 import moment from "moment";
+import { useRouter } from 'next/navigation'
 
 function GamesList() {
   const [games, setGames] = useState([]);
+    
+
 
   useEffect(() => {
     fetch("http://localhost:1234/api/games")
@@ -75,6 +78,19 @@ export default function Dashboard() {
   const [player, setPlayer] = useState(null); // To store the player data retrieved from the API
   const [error, setError] = useState(""); // To store any error message
   const players = PlayerList();
+  const { push } = useRouter();
+  const [authenticated, setAuthenticated] = useState(localStorage.getItem("authenticated") === 'true');
+
+  if(!authenticated){
+
+      useEffect(() => {
+          push('/');
+      }, []);
+
+      return <></>
+  }
+
+
 
   const fetchPlayerStats = () => {
     fetch(`http://localhost:1234/api/players/${name}`) // Corrected endpoint

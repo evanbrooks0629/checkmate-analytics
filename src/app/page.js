@@ -1,14 +1,30 @@
+'use client'
+
 import './globals.css'
 import Image from 'next/image';
 import Navbar from '../components/Navbar';
 import styles from './Home.module.css';
 import image from '../../public/images/Horse.png'
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation'
 
 export default function Home() {
+
+    const { push } = useRouter();
+    const [authenticated, setAuthenticated] = useState(localStorage.getItem("authenticated") === 'true');
+
+    if(authenticated){
+
+        useEffect(() => {
+            push('/dashboard');
+        }, []);
+
+        return <></>
+    }
+
     return (
         <>
-            <Navbar isUserAuthenticated={false} activeLink="dashboard" />
-            <Navbar isUserAuthenticated={false} activeLink="players" />
+            <Navbar isUserAuthenticated={authenticated} activeLink="dashboard" />
             <div className={styles.Home}>
                 <div className={styles.Content}>
                     <h3 className={styles.h3}>Checkmate Analytics</h3>

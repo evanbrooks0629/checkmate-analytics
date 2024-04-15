@@ -5,9 +5,22 @@ import styles from "./Charts.module.css";
 import TimeControlChart from "@/components/TimeControl";
 
 import { useEffect, useState } from "react";
+import { useRouter } from 'next/navigation'
 
 export default function Charts() {
+  
+  const { push } = useRouter();
+  const [authenticated, setAuthenticated] = useState(localStorage.getItem("authenticated") === 'true');
 
+  if(!authenticated){
+
+      useEffect(() => {
+          push('/');
+      }, []);
+
+      return <></>
+  }
+  
   const [timeControl, setTimeControl] = useState([]);
   useEffect(() => {
     fetch("http://localhost:1234/api/time-control")
