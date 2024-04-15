@@ -475,9 +475,43 @@ app.get('/api/user-verification/:username/:password', async (req, res) => {
 
 })
 
+//updating user
+app.put('/api/update-user/:username/:usernameNew/:password/:elo', async(req, res) => {
+    const username = req.params.username;
+    const usernameNew = req.params.usernameNew;
+    const password = crypto.createHmac('sha256', secret).update(req.params.password).digest('hex');
+    const elo = req.params.elo;
+    try{
+        connection = await oracledb.getConnection(dbConfig);
+        // Proper SQL query to find a player by name
+        const result = await connection.execute(
+            `UPDATE Users SET Username=:newname, Password = :password, Elo = :elo
+            WHERE UserName = :name`,
+            { newname: usernameNew, password: password, elo: elo, name: username },  // Binding the 'username' parameter with '%' wildcards
+            { outFormat: oracledb.OUT_FORMAT_OBJECT }  // Output as object for easier handling
+        );
+        
+        res.status(200).send(result);
+    }
+    catch (err) {
+        console.error('Database query error', err.message);
+        res.status(500).send("Error creating new user");
+    }
+    finally {
+        if (connection) {
+            try {
+                await connection.close();  // Properly close the database connection
+            } catch (err) {
+                console.error('Error closing connection', err);
+            }
+        }
+    }
+
+})
+
 
 //Get user
-app.get('/api/user-verification/:username', async(req, res) => {
+app.get('/api/user-data/:username', async(req, res) => {
 
     const userName = req.params.username;  // Access the user name from URL parameters
     let connection;
@@ -496,7 +530,7 @@ app.get('/api/user-verification/:username', async(req, res) => {
         if (result.rows.length > 0) {
             res.json(result.rows[0]);  // Send player data back to client, assuming only one match is expected
         } else {
-            res.status(404).send('User not found');  // Appropriate message if no user is found
+            res.status(403).send('User not found');  // Appropriate message if no user is found
         }
     } catch (err) {
         console.error('Database query error', err.message);
