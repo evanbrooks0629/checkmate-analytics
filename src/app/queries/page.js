@@ -39,7 +39,6 @@ function runQuery(queryNumber) {
   ORDER BY
     Year`;
 
-
   switch (queryNumber) {
     case 1:
       return (
@@ -99,10 +98,57 @@ function runQuery(queryNumber) {
           <p style={{ textDecoration: "underline", fontWeight: "bold" }}>
             SQL Source Code
           </p>
-          <p style={{ fontFamily: "sans-serif, Source Code Pro" }}>3</p>
+          <p style={{ fontFamily: "sans-serif, Source Code Pro" }}>
+            {`WITH PlayerThreshold AS (
+          SELECT PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY Elo) AS TopElo
+          FROM Player
+      ),
+      TopPlayers AS (
+          SELECT DISTINCT PlayerID
+          FROM Player
+          WHERE Elo >= (SELECT TopElo FROM PlayerThreshold)
+      ),
+      EliteOpenings AS (
+          SELECT
+              M.ECO,
+              COUNT(*) AS Games,
+              TO_CHAR(G.EndDateTime, 'YYYY') AS Year,
+              P.PlayerID,
+              RANK() OVER (PARTITION BY TO_CHAR(G.EndDateTime, 'YYYY') ORDER BY P.Elo DESC) AS PlayerRank
+          FROM
+              Game G
+          JOIN
+              Player P ON G.WhitePlayerID = P.PlayerID OR G.BlackPlayerID = P.PlayerID
+          JOIN
+              Moves M ON G.MovesID = M.MovesID
+          WHERE
+              P.Elo >= (SELECT TopElo FROM PlayerThreshold)
+          GROUP BY
+              M.ECO, TO_CHAR(G.EndDateTime, 'YYYY'), P.PlayerID, P.Elo
+      ),
+      TotalGames AS (
+          SELECT Year, ECO, SUM(Games) AS TotalGames
+          FROM EliteOpenings
+          GROUP BY Year, ECO
+      )
+      SELECT 
+          t.Year, 
+          t.ECO, 
+          t.TotalGames
+      FROM 
+          TotalGames t
+      WHERE 
+          EXISTS (
+              SELECT 1 FROM EliteOpenings eo 
+              WHERE t.Year = eo.Year AND t.ECO = eo.ECO AND eo.PlayerRank <= CEIL(0.05 * (SELECT COUNT(*) FROM TopPlayers))
+          )
+      ORDER BY 
+          t.Year, t.TotalGames DESC`}
+          </p>
           <a href="/charts">View Result Chart</a>
         </div>
       );
+
     case 4:
       return (
         <div className={styles.ResultStyle}>
@@ -113,10 +159,57 @@ function runQuery(queryNumber) {
           <p style={{ textDecoration: "underline", fontWeight: "bold" }}>
             SQL Source Code
           </p>
-          <p style={{ fontFamily: "sans-serif, Source Code Pro" }}>4</p>
+          <p style={{ fontFamily: "sans-serif, Source Code Pro" }}>
+            {`WITH OpeningUsage AS (
+            SELECT 
+                m.ECO,
+                m.ECOName,
+                EXTRACT(YEAR FROM g.ENDDATETIME) AS Year,
+                COUNT(*) AS GamesPlayed,
+                COUNT(CASE WHEN g.Outcome = '1-0' THEN 1 END) AS WhiteWins,
+                COUNT(CASE WHEN g.Outcome = '0-1' THEN 1 END) AS BlackWins,
+                COUNT(CASE WHEN g.Outcome = '1/2-1/2' THEN 1 END) AS Draws
+            FROM 
+                Moves m
+            JOIN 
+                Game g ON m.MovesID = g.MovesID
+            GROUP BY 
+                m.ECO, m.ECOName, EXTRACT(YEAR FROM g.ENDDATETIME)
+        ),
+        OpeningWinRates AS (
+            SELECT 
+                ECO,
+                ECOName,
+                Year,
+                GamesPlayed,
+                WhiteWins,
+                BlackWins,
+                Draws,
+                ROUND(((WhiteWins + BlackWins) / CAST(GamesPlayed AS FLOAT)) * 100, 2) AS WinRate,
+                ROUND((Draws / CAST(GamesPlayed AS FLOAT)) * 100, 2) AS DrawRate
+            FROM 
+                OpeningUsage
+        )
+        SELECT 
+            ECO,
+            ECOName,
+            Year,
+            GamesPlayed,
+            WinRate,
+            DrawRate
+        FROM 
+            OpeningWinRates
+        WHERE 
+            GamesPlayed > (
+                SELECT AVG(GamesPlayed) * 1.5 FROM OpeningUsage WHERE Year = OpeningWinRates.Year
+            )
+        ORDER BY 
+            Year, WinRate DESC`}
+          </p>
           <a href="/charts">View Result Chart</a>
         </div>
       );
+
     case 5:
       return (
         <div className={styles.ResultStyle}>
@@ -131,20 +224,6 @@ function runQuery(queryNumber) {
           <a href="/charts">View Result Chart</a>
         </div>
       );
-    case 6:
-      return (
-        <div className={styles.ResultStyle}>
-          <p style={{ textDecoration: "underline", fontWeight: "bold" }}>
-            Result of Query 6
-          </p>
-          <p>Description: 6</p>
-          <p style={{ textDecoration: "underline", fontWeight: "bold" }}>
-            SQL Source Code
-          </p>
-          <p style={{ fontFamily: "sans-serif, Source Code Pro" }}>6</p>
-          <a href="/charts">View Result Chart</a>
-        </div>
-      );
     default:
       // Code for invalid query number
       break;
@@ -156,13 +235,13 @@ export default function Queries() {
   const { push } = useRouter();
   const [authenticated, setAuthenticated] = useState(localStorage.getItem("authenticated") === 'true');
 
-  if(!authenticated){
+  if (!authenticated) {
 
-      useEffect(() => {
-          push('/');
-      }, []);
+    useEffect(() => {
+      push('/');
+    }, []);
 
-      return <></>
+    return <></>
   }
 
 
@@ -194,7 +273,7 @@ export default function Queries() {
             </div>
             <div className={styles.queries}>
               <p>Query 3</p>
-              <p>Query 3 Name</p>
+              <p>Evolution of Opening Strategies Among Top Players</p>
               <button onClick={() => setResult(runQuery(3))}>
                 See Source Code
               </button>
@@ -202,7 +281,7 @@ export default function Queries() {
             </div>
             <div className={styles.queries}>
               <p>Query 4</p>
-              <p>Query 4 Name</p>
+              <p>Most popular chess openings and their win rates by year </p>
               <button onClick={() => setResult(runQuery(4))}>
                 See Source Code
               </button>
@@ -212,14 +291,6 @@ export default function Queries() {
               <p>Query 5</p>
               <p>Query 5 Name</p>
               <button onClick={() => setResult(runQuery(5))}>
-                See Source Code
-              </button>
-              <button>View Chart Results</button>
-            </div>
-            <div className={styles.queries}>
-              <p>Query 6</p>
-              <p>Query 6 Name</p>
-              <button onClick={() => setResult(runQuery(6))}>
                 See Source Code
               </button>
               <button>View Chart Results</button>
