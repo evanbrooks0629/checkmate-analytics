@@ -117,7 +117,7 @@ app.get('/api/players', async (req, res) => {
     }
 });
 
-// Query 2 Time Control Preferences by Player Rating
+// Query 1 Time Control Preferences by Player Rating
 // This query would reveal preferences for time control settings across different Elo rating brackets, 
 // showing trends in the popularity of blitz, rapid, and standard time controls among different skill levels.
 app.get('/api/time-control', async (req, res) => {
@@ -158,7 +158,7 @@ app.get('/api/time-control', async (req, res) => {
     }
 });
 
-// Query 3
+// Query 2
 // Yearly Performance Metrics by Top Quartile Players
 // This query focuses on players in the top 25% based on Elo rating 
 // evaluating their performance metrics across the years.
@@ -171,8 +171,8 @@ app.get('/api/major-events-performance', async (req, res) => {
             connectString: "oracle.cise.ufl.edu:1521/orcl"
         });
 
-        const sqlQuery = `
-            WITH PlayerPerformance AS (
+        const sqlQuery = 
+            `WITH PlayerPerformance AS (
                 SELECT
                     EXTRACT(YEAR FROM G.ENDDATETIME) AS Year,
                     P.PlayerID,
@@ -206,6 +206,7 @@ app.get('/api/major-events-performance', async (req, res) => {
                 Year DESC 
         `;
 
+
         const result = await connection.execute(sqlQuery);
 
         res.json(result.rows);
@@ -223,7 +224,7 @@ app.get('/api/major-events-performance', async (req, res) => {
     }
 });
 
-// Query 4
+// Query 3
 //  Evolution of Opening Strategies Among Top Players
 //This query shows the use of different chess openings (ECO codes) by the top 5% of players varies over time, highlighting shifts in strategic preferences.
 app.get('/api/opening-evolution', async (req, res) => {
@@ -377,6 +378,9 @@ app.get('/api/opening-win-rate', async (req, res) => {
 });
 
 
+
+
+
 //User creation
 app.post('/api/user-creation', async (req, res) => {
     const username = req.body.username;
@@ -454,6 +458,46 @@ app.get('/api/user-verification/:username/:password', async (req, res) => {
             else {
                 res.status(403).send("Verification Failed");
             }
+        } else {
+            res.status(404).send('User not found');  // Appropriate message if no user is found
+        }
+    } catch (err) {
+        console.error('Database query error', err.message);
+        res.status(500).send("Error fetching user data");
+    } finally {
+        if (connection) {
+            try {
+                await connection.close();  // Properly close the database connection
+            } catch (err) {
+                console.error('Error closing connection', err);
+            }
+        }
+    }
+
+
+
+})
+
+
+//Get user
+app.get('/api/user-verification/:username', async(req, res) => {
+
+    const userName = req.params.username;  // Access the user name from URL parameters
+    let connection;
+
+    try {
+        connection = await oracledb.getConnection(dbConfig);
+        // Proper SQL query to find a player by name
+        const result = await connection.execute(
+            `SELECT * FROM Users
+            WHERE UserName = :name
+            FETCH NEXT 1 ROWS ONLY`,
+            { name: userName },  // Binding the 'username' parameter with '%' wildcards
+            { outFormat: oracledb.OUT_FORMAT_OBJECT }  // Output as object for easier handling
+        );
+
+        if (result.rows.length > 0) {
+            res.json(result.rows[0]);  // Send player data back to client, assuming only one match is expected
         } else {
             res.status(404).send('User not found');  // Appropriate message if no user is found
         }

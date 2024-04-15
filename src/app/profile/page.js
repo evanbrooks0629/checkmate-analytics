@@ -1,8 +1,31 @@
+"use client";
+
 import "../globals.css";
 import Navbar from "../../components/Navbar";
 import styles from "./Profile.module.css";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Profile() {
+  const { push } = useRouter();
+  const [authenticated, setAuthenticated] = useState(
+    localStorage.getItem("authenticated") === "true"
+  );
+
+  if (!authenticated) {
+    useEffect(() => {
+      push("/");
+    }, []);
+
+    return <></>;
+  }
+
+  const logOut =() => {
+    localStorage.setItem("authenticated", "false");
+    localStorage.setItem("username", "");
+    push("/");
+  }
+
   return (
     <>
       <Navbar isUserAuthenticated={true} activeLink="" />
@@ -18,6 +41,10 @@ export default function Profile() {
           <h2>Save Your Elo</h2>
           <input></input>
           <button className={styles.btn_primary}>Submit</button>
+          <h2>Logout</h2>
+          <button className={styles.btn_primary} onClick={() => logOut()}>
+            Log out
+          </button>
           <h3>Information</h3>
           <h2>Current Email: {/*DISPLAY USER.EMAIL*/}</h2>
           <h2>Current Password: {/*DISPLAY USER.PASSWORD*/}</h2>
