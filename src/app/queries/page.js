@@ -94,7 +94,7 @@ function runQuery(queryNumber) {
           <p style={{ textDecoration: "underline", fontWeight: "bold" }}>
             Result of Query 3
           </p>
-          <p>Description: 3</p>
+          <p>Description: This query provides a detailed analysis of the most prevalent chess openings used by the top 5% of players, tracking how their preferences have shifted over the years. By focusing on Elite Opening Moves (ECO codes), the query highlights strategic trends and changes in gameplay at the highest levels of competition. Data is aggregated annually and ranks the frequency of each opening, offering insights into how top-tier players adapt their strategies to evolving game theories and opponent tendencies.</p>
           <p style={{ textDecoration: "underline", fontWeight: "bold" }}>
             SQL Source Code
           </p>
