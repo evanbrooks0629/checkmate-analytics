@@ -136,6 +136,13 @@
     border-radius: 5px;
     width: 90%;
     margin-top: 2%;
+    overflow-y: scroll;
+  }
+
+  .SearchResults p {
+    font-weight: bold;
+    padding-left: 10px;
+
   }
 
   .GameList {
