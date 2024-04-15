@@ -301,7 +301,7 @@ app.get('/api/opening-evolution', async (req, res) => {
     }
 });
 
-// Query 5
+// Query 4
 // most popular chess openings (using the ECO codes) and their respective win rates by year.
 app.get('/api/opening-win-rate', async (req, res) => {
     let connection;
@@ -326,6 +326,8 @@ app.get('/api/opening-win-rate', async (req, res) => {
                 Moves m
             JOIN 
                 Game g ON m.MovesID = g.MovesID
+            WHERE 
+                EXTRACT(YEAR FROM g.ENDDATETIME) BETWEEN 2018 AND 2022
             GROUP BY 
                 m.ECO, m.ECOName, EXTRACT(YEAR FROM g.ENDDATETIME)
         ),
@@ -353,9 +355,7 @@ app.get('/api/opening-win-rate', async (req, res) => {
         FROM 
             OpeningWinRates
         WHERE 
-            GamesPlayed > (
-                SELECT AVG(GamesPlayed) * 1.5 FROM OpeningUsage WHERE Year = OpeningWinRates.Year
-            )
+            GamesPlayed >= 750
         ORDER BY 
             Year, WinRate DESC
         `;
