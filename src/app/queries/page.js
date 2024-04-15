@@ -2,9 +2,11 @@
 import "../globals.css";
 import Navbar from "../../components/Navbar";
 import styles from "./Queries.module.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from 'next/navigation'
 
 function runQuery(queryNumber) {
+
   switch (queryNumber) {
     case 1:
       return (
@@ -111,6 +113,20 @@ function runQuery(queryNumber) {
 
 export default function Queries() {
   const [result, setResult] = useState(null);
+  const { push } = useRouter();
+  const [authenticated, setAuthenticated] = useState(localStorage.getItem("authenticated") === 'true');
+
+  if(!authenticated){
+
+      useEffect(() => {
+          push('/');
+      }, []);
+
+      return <></>
+  }
+
+
+
   return (
     <>
       <Navbar isUserAuthenticated={true} activeLink="dashboard" />

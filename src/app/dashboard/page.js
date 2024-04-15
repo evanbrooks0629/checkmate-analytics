@@ -4,9 +4,12 @@ import Navbar from '../../components/Navbar';
 import styles from './Dashboard.module.css';
 import { useEffect, useState } from 'react';
 import moment from 'moment';
+import { useRouter } from 'next/navigation'
 
 function GamesList() {
     const [games, setGames] = useState([]);
+    
+
 
     useEffect(() => {
         fetch('http://localhost:1234/api/games')
@@ -33,6 +36,19 @@ function GamesList() {
 
 export default function Dashboard() {
     //Create query logic
+
+    const { push } = useRouter();
+    const [authenticated, setAuthenticated] = useState(localStorage.getItem("authenticated") === 'true');
+
+    if(!authenticated){
+
+        useEffect(() => {
+            push('/');
+        }, []);
+
+        return <></>
+    }
+    
     const games = GamesList();
     return (
         <>

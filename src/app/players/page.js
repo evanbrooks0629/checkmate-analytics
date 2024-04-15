@@ -3,13 +3,25 @@
 import '../globals.css';
 import Navbar from '../../components/Navbar';
 import styles from './Players.module.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation'
 
 export default function Players() {
     const [name, setName] = useState('');  // To store the player name input by the user
     const [player, setPlayer] = useState(null);  // To store the player data retrieved from the API
     const [error, setError] = useState('');  // To store any error message
+    const { push } = useRouter();
+    const [authenticated, setAuthenticated] = useState(localStorage.getItem("authenticated") === 'true');
 
+    if(!authenticated){
+
+        useEffect(() => {
+            push('/');
+        }, []);
+
+        return <></>
+    }
+    
     const fetchPlayerStats = () => {
         fetch(`http://localhost:1234/api/players/${name}`)  // Corrected endpoint
             .then(response => response.json())  // First, convert the response to JSON

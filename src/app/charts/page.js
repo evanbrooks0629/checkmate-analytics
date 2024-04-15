@@ -3,9 +3,22 @@ import "../globals.css";
 import Navbar from "../../components/Navbar";
 import styles from "./Charts.module.css";
 import { useEffect, useState } from "react";
+import { useRouter } from 'next/navigation'
 
 export default function Charts() {
+  
+  const { push } = useRouter();
+  const [authenticated, setAuthenticated] = useState(localStorage.getItem("authenticated") === 'true');
 
+  if(!authenticated){
+
+      useEffect(() => {
+          push('/');
+      }, []);
+
+      return <></>
+  }
+  
   useEffect(() => {setChart(handleChart(1))}, []);
 
   const [chart, setChart] = useState(null);
