@@ -53,7 +53,7 @@ export default function Players() {
                     {player && (
                         <>
                             <div className={styles.playerName}>
-                                <p>{player.REALNAME}</p>  
+                                <p>{player.REALNAME !== 'N/A' ? player.REALNAME : player.PLAYERNAME}</p>  
                             </div>
                             <div className={styles.border} />
                             <div className={styles.stats}>
