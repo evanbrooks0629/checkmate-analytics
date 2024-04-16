@@ -155,7 +155,7 @@ function runQuery(queryNumber) {
           <p style={{ textDecoration: "underline", fontWeight: "bold" }}>
             Result of Query 4
           </p>
-          <p>Description: 4</p>
+          <p>The most popular chess openings (using the ECO codes) and their respective win rates by year.</p>
           <p style={{ textDecoration: "underline", fontWeight: "bold" }}>
             SQL Source Code
           </p>
@@ -216,11 +216,50 @@ function runQuery(queryNumber) {
           <p style={{ textDecoration: "underline", fontWeight: "bold" }}>
             Result of Query 5
           </p>
-          <p>Description: 5</p>
+          <p>Seasonal performance metrics split by year and season for chess players, showing games played, wins, and win percentage.</p>
           <p style={{ textDecoration: "underline", fontWeight: "bold" }}>
             SQL Source Code
           </p>
-          <p style={{ fontFamily: "sans-serif, Source Code Pro" }}>5</p>
+          <p style={{ fontFamily: "sans-serif, Source Code Pro" }}>
+            {`WITH SeasonalPerformance AS (
+                SELECT 
+                    p.PlayerID,
+                    p.RealName,
+                    p.PlayerName,
+                    CASE 
+                        WHEN EXTRACT(MONTH FROM g.EndDateTime) IN (12,1,2) THEN 'Winter'  -- Dec, Jan, Feb
+                        WHEN EXTRACT(MONTH FROM g.EndDateTime) BETWEEN 3 AND 5 THEN 'Spring'  -- Mar, Apr, May
+                        WHEN EXTRACT(MONTH FROM g.EndDateTime) BETWEEN 6 AND 8 THEN 'Summer'  -- Jun, Jul, Aug
+                        ELSE 'Autumn'  -- Sep, Oct, Nov
+                    END AS Season,
+                    EXTRACT(YEAR FROM g.EndDateTime) AS Year,
+                    COUNT(g.GameID) AS GamesPlayed,
+                    SUM(
+                    CASE
+                        WHEN ((g.Outcome = '1-0' AND g.WhitePlayerID = p.PlayerID) OR (g.Outcome = '0-1' AND g.BlackPlayerID = p.PlayerID)) THEN 1 
+                        ELSE 0 
+                    END) AS Wins
+                FROM 
+                    Game g
+                JOIN 
+                    Player p ON (g.WhitePlayerID = p.PlayerID OR g.BlackPlayerID = p.PlayerID)
+                GROUP BY 
+                    p.PlayerID, p.RealName, p.PlayerName, Season, EXTRACT(YEAR FROM g.EndDateTime)
+            )
+            SELECT
+                RealName,
+                Season,
+                Year,
+                COUNT(GamesPlayed) AS GamesPlayed,
+                SUM(Wins) AS Wins,
+                ROUND((CAST(SUM(Wins) AS FLOAT) / COUNT(GamesPlayed))* 100, 2) AS WinPercentage
+            FROM 
+                SeasonalPerformance
+            GROUP BY
+                RealName, Season, Year
+            ORDER BY 
+                RealName, Year`}
+          </p>
           <a href="/charts">View Result Chart</a>
         </div>
       );
@@ -318,7 +357,7 @@ export default function Queries() {
             </div>
             <div className={styles.queries}>
               <p>Query 5</p>
-              <p>Query 5 Name</p>
+              <p>Seasonal Performance Across the Year</p>
               <button onClick={() => setResult(runQuery(5))}>
                 See Source Code
               </button>
