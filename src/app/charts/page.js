@@ -70,8 +70,8 @@ export default function Charts() {
         return <div className={styles.chartContent}><OpeningWinRateChart data={winRate} /></div>;
       case 5:
         return <div className={styles.chartContent}>Chart 5</div>;
-      case 6:
-        return <div className={styles.chartContent}>Chart 6</div>;
+      default:
+        return <div className={styles.chartContent}>No Chart Selected</div>;
     }
   };
 
@@ -87,7 +87,6 @@ export default function Charts() {
             <button onClick={() => setChart(handleChart(3))}>Query 3</button>
             <button onClick={() => setChart(handleChart(4))}>Query 4</button>
             <button onClick={() => setChart(handleChart(5))}>Query 5</button>
-            <button onClick={() => setChart(handleChart(6))}>Query 6</button>
           </div>
           <div className={styles.chartContainer}>{chart}</div>
         </div>
