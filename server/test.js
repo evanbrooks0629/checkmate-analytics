@@ -95,7 +95,7 @@ app.get('/api/players', async (req, res) => {
     try {
         connection = await oracledb.getConnection(dbConfig);
         const result = await connection.execute(
-            `SELECT distinct outcome from Game FETCH NEXT 1000 ROWS ONLY`  // Fetch first 1000 rows from Player table
+            `SELECT COUNT(*) FROM Game`  // Fetch first 1000 rows from Player table
         );
 
         if (result.rows.length > 0) {
@@ -171,7 +171,7 @@ app.get('/api/major-events-performance', async (req, res) => {
             connectString: "oracle.cise.ufl.edu:1521/orcl"
         });
 
-        const sqlQuery = 
+        const sqlQuery =
             `WITH PlayerPerformance AS (
                 SELECT
                     EXTRACT(YEAR FROM G.ENDDATETIME) AS Year,
@@ -377,6 +377,84 @@ app.get('/api/opening-win-rate', async (req, res) => {
     }
 });
 
+// Query 5
+// Players winrates during different times of the year, across past 10+ years.
+// Can visualize when more games are played ie. Summer, Winter, ... 
+// Can visualzie who plays better during different times of the year.
+app.get('/api/seasonal-data', async (req, res) => {
+    let connection;
+    try {
+        connection = await oracledb.getConnection({
+            user: "cmcloon",
+            password: process.env.PASSWORD,
+            connectString: "oracle.cise.ufl.edu:1521/orcl"
+        });
+
+        const sqlQuery = `
+        WITH SeasonalPerformance AS (
+            SELECT 
+                p.PlayerID,
+                p.RealName,
+                p.PlayerName,
+                CASE 
+                    WHEN EXTRACT(MONTH FROM g.EndDateTime) IN (12,1,2) THEN 'Winter'  -- Dec, Jan, Feb
+                    WHEN EXTRACT(MONTH FROM g.EndDateTime) BETWEEN 3 AND 5 THEN 'Spring'  -- Mar, Apr, May
+                    WHEN EXTRACT(MONTH FROM g.EndDateTime) BETWEEN 6 AND 8 THEN 'Summer'  -- Jun, Jul, Aug
+                    ELSE 'Autumn'  -- Sep, Oct, Nov
+                END AS Season,
+                EXTRACT(YEAR FROM g.EndDateTime) AS Year,
+                COUNT(g.GameID) AS GamesPlayed,
+                SUM(
+                CASE
+                    WHEN ((g.Outcome = '1-0' AND g.WhitePlayerID = p.PlayerID) OR (g.Outcome = '0-1' AND g.BlackPlayerID = p.PlayerID)) THEN 1 
+                    ELSE 0 
+                END) AS Wins
+            FROM 
+                Game g
+            JOIN 
+                Player p ON (g.WhitePlayerID = p.PlayerID OR g.BlackPlayerID = p.PlayerID)
+            GROUP BY 
+                p.PlayerID, p.RealName, p.PlayerName,
+                CASE 
+                    WHEN EXTRACT(MONTH FROM g.EndDateTime) IN(12,1,2) THEN 'Winter'
+                    WHEN EXTRACT(MONTH FROM g.EndDateTime) BETWEEN 3 AND 5 THEN 'Spring'
+                    WHEN EXTRACT(MONTH FROM g.EndDateTime) BETWEEN 6 AND 8 THEN 'Summer'
+                    ELSE 'Autumn'
+                END,
+                EXTRACT(YEAR FROM g.EndDateTime)
+        )
+        SELECT
+            RealName,
+            Season,
+            Year,
+            COUNT(GamesPlayed),
+            SUM(Wins),
+            ROUND((CAST(SUM(Wins) AS FLOAT) / COUNT(GamesPlayed))* 100, 2) AS WinPercentage
+        FROM 
+            SeasonalPerformance
+        GROUP BY
+            RealName, Season, Year
+        ORDER BY 
+            RealName, Year
+        `;
+
+        const result = await connection.execute(sqlQuery);
+
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error fetching data from Game table");
+    } finally {
+        if (connection) {
+            try {
+                await connection.close();
+            } catch (err) {
+                console.error("Error closing the connection", err);
+            }
+        }
+    }
+});
+
 
 //User creation
 app.post('/api/user-creation', async (req, res) => {
@@ -476,12 +554,12 @@ app.get('/api/user-verification/:username/:password', async (req, res) => {
 })
 
 //updating user
-app.put('/api/update-user/:username/:usernameNew/:password/:elo', async(req, res) => {
+app.put('/api/update-user/:username/:usernameNew/:password/:elo', async (req, res) => {
     const username = req.params.username;
     const usernameNew = req.params.usernameNew;
     const password = crypto.createHmac('sha256', secret).update(req.params.password).digest('hex');
     const elo = req.params.elo;
-    try{
+    try {
         connection = await oracledb.getConnection(dbConfig);
         // Proper SQL query to find a player by name
         const result = await connection.execute(
@@ -490,7 +568,7 @@ app.put('/api/update-user/:username/:usernameNew/:password/:elo', async(req, res
             { newname: usernameNew, password: password, elo: elo, name: username },  // Binding the 'username' parameter with '%' wildcards
             { outFormat: oracledb.OUT_FORMAT_OBJECT }  // Output as object for easier handling
         );
-        
+
         res.status(200).send(result);
     }
     catch (err) {
@@ -511,7 +589,7 @@ app.put('/api/update-user/:username/:usernameNew/:password/:elo', async(req, res
 
 
 //Get user
-app.get('/api/user-data/:username', async(req, res) => {
+app.get('/api/user-data/:username', async (req, res) => {
 
     const userName = req.params.username;  // Access the user name from URL parameters
     let connection;
