@@ -224,16 +224,45 @@ function runQuery(queryNumber) {
           <a href="/charts">View Result Chart</a>
         </div>
       );
+
+    case 6:
+        return(
+          <div className={styles.ResultStyle}>
+          <p style={{ textDecoration: "underline", fontWeight: "bold" }}>
+            Result of Query 6
+          </p>
+          <p>
+            Description: This SQL query gets the number of tuples in our database as is required by the project
+          </p>
+        </div>
+        );
     default:
       // Code for invalid query number
       break;
   }
 }
 
+
+
+
+
 export default function Queries() {
   const [result, setResult] = useState(null);
   const { push } = useRouter();
-  const [authenticated, setAuthenticated] = useState(localStorage.getItem("authenticated") === 'true');
+  const [authenticated, setAuthenticated] = useState(localStorage.getItem("authenticated") === 'true'); 
+  const [tuples, setTuples] = useState(0)
+
+
+
+  const getTuples = () => {
+    fetch("http://localhost:1234/api/num-tuples/", {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    }).then((r) => r.json())
+    .then((r) => {
+      setTuples(r.COUNT)
+    });
+  }
 
   if (!authenticated) {
 
@@ -294,6 +323,12 @@ export default function Queries() {
                 See Source Code
               </button>
               <button>View Chart Results</button>
+            </div>
+            <div className={styles.queries}>
+              <p>Query 6</p>
+              <p>Gets Number of Tuples</p>
+              <button onClick={()=> getTuples()}>View Number of Tuples</button>
+              <p>Tuples = {tuples}</p>
             </div>
           </div>
         </div>
