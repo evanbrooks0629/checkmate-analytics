@@ -47,7 +47,8 @@ const MajorEventsPerformanceChart = ({ data }) => {
             title: {
               display: true,
               text: 'Year'
-            }
+            },
+            reverse:true
           },
           y: {
             title: {
