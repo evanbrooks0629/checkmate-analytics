@@ -550,7 +550,32 @@ app.get('/api/user-data/:username', async(req, res) => {
 })
 
 
+app.get('/api/num-tuples/', async(req, res) => {
 
+
+    try {
+        connection = await oracledb.getConnection(dbConfig);
+        //SQL QUERY TO GET ROW COUNT
+        const result = await connection.execute(
+            `SELECT COUNT(*) AS Count FROM Game`
+        );
+
+        if (result.rows.length > 0) {
+            res.json(result.rows[0]);
+        }
+    } catch (err) {
+        console.error('Database query error', err.message);
+        res.status(500).send("Error fetching user data");
+    } finally {
+        if (connection) {
+            try {
+                await connection.close();  // Properly close the database connection
+            } catch (err) {
+                console.error('Error closing connection', err);
+            }
+        }
+    }
+})
 
 
 app.listen(port, () => {
