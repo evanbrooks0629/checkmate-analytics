@@ -340,7 +340,7 @@ app.get('/api/opening-win-rate', async (req, res) => {
                 WhiteWins,
                 BlackWins,
                 Draws,
-                ROUND(((WhiteWins + BlackWins) / CAST(GamesPlayed AS FLOAT)) * 100, 2) AS WinRate,
+                ROUND((WhiteWins / CAST(GamesPlayed AS FLOAT)) * 100, 2) AS WinRate,
                 ROUND((Draws / CAST(GamesPlayed AS FLOAT)) * 100, 2) AS DrawRate
             FROM 
                 OpeningUsage
