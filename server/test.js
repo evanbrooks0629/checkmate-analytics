@@ -95,7 +95,7 @@ app.get('/api/players', async (req, res) => {
     try {
         connection = await oracledb.getConnection(dbConfig);
         const result = await connection.execute(
-            `SELECT COUNT(*) FROM Game`  // Fetch first 1000 rows from Player table
+            `SELECT DISTINCT PLAYERNAME FROM PLAYER FETCH FIRST 1000 ROWS ONLY`  // Fetch first 1000 rows from Player table
         );
 
         if (result.rows.length > 0) {
